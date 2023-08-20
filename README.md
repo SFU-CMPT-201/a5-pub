@@ -220,6 +220,7 @@ do an exercise.
 
 * Once again, if you are not recording, start recording with `record`. You should do this in the
   directory that this `README.md` file is in.
+*
 
 ```c
 #include <stdio.h>
