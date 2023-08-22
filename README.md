@@ -33,6 +33,7 @@ what a logging library is.
 * Create a directory named `logging` under this assignment's directory, and do everything in that
   directory.
 * Create a file named `logging.c` and write the following code.
+
   ```bash
   #include <stdio.h>
 
@@ -51,6 +52,7 @@ what a logging library is.
     return 0;
   }
   ```
+
 * Write a Makefile that compiles `logging.c` and generates an executable named `logging`.
 * Go to [log.c](https://github.com/rxi/log.c) and clone the repo outside of `units/`. For example,
   you can clone the repo in your home root directory (`$HOME`).
@@ -63,6 +65,7 @@ what a logging library is.
   for grading.
 * Entering `make` should produce a working executable named `logging`. This will be used for
   grading.
+* You can stop recording here or continue with the next task.
 
 ## Task 1: Assertions
 
@@ -77,7 +80,9 @@ When you write a function, you make certain assumptions about your input argumen
 let's say you're writing a function that performs integer division as follows.
 
 ```c
-int unsafe_divide(int dividend, int divisor) {
+#include <stdint.h>
+
+int32_t unsafe_divide(int32_t dividend, int32_t divisor) {
   return dividend / divisor;
 }
 ```
@@ -85,10 +90,10 @@ int unsafe_divide(int dividend, int divisor) {
 When writing this function, you're making an implicit assumption that `divisor` is not 0. This is
 known as *division by zero*, and in C, this is *undefined behavior*, meaning it can do whatever. In
 addition, you are also making an assumption that you are *not* dividing the minimum value possible
-for an integer by -1, i.e., it is not that `dividend` is `INT_MIN` and `divisor` is -1 at the same
-time. The reason is because `INT_MIN` is -2^31 (assuming a 32-bit integer) and if you were to divide
-it by -1, you would have to get +2^31, which is 1 more than the maximum value possible for a 32-bit
-integer (2^31 - 1). This is called *integer overflow* and it is also undefined behavior.
+for an integer by -1, i.e., it is not that `dividend` is `INT32_MIN` and `divisor` is -1 at the same
+time. The reason is because `INT32_MIN` is -2^31 (since it's a 32-bit integer) and if you were to
+divide it by -1, you would have to get +2^31, which is 1 more than the maximum value possible for a
+32-bit integer (2^31 - 1). This is called *integer overflow* and it is also undefined behavior.
 
 In cases like this, you might want to check if these assumptions that you have actually hold. This
 way, you don't run into undefined behavior, which will do something unexpected. You can use
@@ -96,15 +101,15 @@ assertion to perform such a check.
 
 ```c
 #include <assert.h>
-#include <limits.h>
+#include <stdint.h>
 
-int divide(int dividend, int divisor) {
-  assert(divisor != 0 && (!((dividend == INT_MIN) && (divisor == -1))));
+int32_t divide(int32_t dividend, int32_t divisor) {
+  assert(divisor != 0 && (!((dividend == INT32_MIN) && (divisor == -1))));
   return dividend / divisor;
 }
 ```
 
-If you call the above function with `INT_MIN` as `dividend` and -1 as `divisor` or just -1 as
+If you call the above function with `INT32_MIN` as `dividend` and -1 as `divisor` or just -1 as
 `divisor`, the program will abort. This is useful for testing since you can catch the use of your
 function that violates your assumptions. Generally, assertions do not have to abort but `assert()`
 does abort and is used when termination is the right thing to do.
@@ -118,9 +123,10 @@ To learn more about undefined behavior in C, we highly encourage you to read [A 
 Behavior in C and C++](https://blog.regehr.org/archives/213) by John Regehr. The above example of
 division by zero comes from that article. Also, if you want to see the list of undefined behavior,
 you can look at the end of [this article](https://blog.regehr.org/archives/1520) by the same author.
-Undefined behavior is a very common source of bugs and vulnerabilities in a program. [This
-article](http://blog.llvm.org/2011/05/what-every-c-programmer-should-know.html) by Chris Lattner,
-one of the creators of Clang, is also a good read on this topic.
+Undefined behavior is a very common source of bugs and vulnerabilities in a program. [What Every C
+Programmer Should Know about Undefined
+Behavior](http://blog.llvm.org/2011/05/what-every-c-programmer-should-know.html) by Chris Lattner,
+the main creator of Clang, is also a good read on this topic.
 
 ### Checking return conditions
 
@@ -129,8 +135,10 @@ conditions for the return value are met. For example, let's say you are writing 
 returns the absolute value of an integer as follows.
 
 ```c
-int absolute_value(int num) {
-  int ret = 0;
+#include <stdint.h>
+
+int32_t absolute_value(int32_t num) {
+  int32_t ret = 0;
 
   if (num < 0) {
     ret = -num;
@@ -146,8 +154,11 @@ Since you want to return an absolute value, it is a good idea to add a check tha
 return value is greater than or equal to 0.
 
 ```c
-int absolute_value(int num) {
-  int ret = 0;
+#include <assert.h>
+#include <stdint.h>
+
+int32_t absolute_value(int32_t num) {
+  int32_t ret = 0;
 
   if (num < 0) {
     ret = -num;
@@ -160,10 +171,10 @@ int absolute_value(int num) {
 }
 ```
 
-Similar to the term *precondition* mentioned above, this is broadly called a *postcondition*. A
-postcondition is a condition that must be met after executing a piece of code. This is also a
-general concept that goes beyond function returns, and the use of `assertion()` in the above example
-is just one example.
+Along with the concept of preconditions discussed above, there is a concept known as
+*postconditions*. A postcondition is a condition that must be met after executing a piece of code.
+This is also a general concept that goes beyond function returns, and the use of `assertion()` in
+the above example is just one example.
 
 ### Assertion exercise
 
@@ -178,17 +189,20 @@ is just one example.
   (that contains the precondition you added). When calling `absolute_value()`, pass the value that
   causes undefined behavior, thereby causing your precondition to fail.
 * Write a Makefile that produces the executable named `assertions`.
+* You can stop recording here or continue with the next task.
 
 ## Task 2: Static checkers and sanitizers
 
-We mentioned linters and sanitizers before, which are useful tools for debugging. Linters perform
-*static* checks as opposed to *dynamic* checks in the sense that their checks occur when you write
-your code rather than when you run your code. You might recall that we discussed the differences
-between the terms "static" and "dynamic" when we discussed static and dynamic (shared) libraries. At
-that time, we said that static referred to something that occurs at compile time and dynamic
-referred to something that occur at run time. However, static actually refers to something
-broader---it refers to something that occurs by analyzing code rather than running it. For this
-reason, linters belong to a category of tools called *static analysis* tools.
+We mentioned linters and sanitizers before, which are useful tools for debugging. As you know
+already, we have installed linters for bash, C, CMake, etc. for Neovim, which give you useful
+suggestions and report errors as you write your code. In this sense, linters perform *static* checks
+as opposed to *dynamic* checks, i.e., their checks occur when you write your code rather than when
+you run your code. You might recall that we discussed the differences between the terms "static" and
+"dynamic" when we discussed static and dynamic (shared) libraries. At that time, we said that
+"static" referred to something done at compile time and "dynamic" referred to something done at run
+time. However, the meaning of "static" is in fact broader---it refers to something done by analyzing
+code rather than by running it. For this reason, linters belong to the category of tools called
+*static analysis* tools.
 
 In contrast, sanitizers are dynamic tools in the sense that they perform their checks at run time.
 As mentioned before, Clang provides many sanitizers such as `AddressSanitizer`, `ThreadSanitizer`,
@@ -203,31 +217,170 @@ sanitizers and see which error you get.
 * Remove all `assert()` calls from your `absolute_value()` function.
 * Create a file named `main.c` with a `main()` function that calls your `absolute_value()` function.
   When calling `absolute_value()`, pass the value that causes undefined behavior.
-* Write a Makefile that produces the executable named `assertions`.
+* Write a Makefile that produces an executable named `assertions`.
 * Run the executable and see what happens.
 * Modify your Makefile so you can enable `UndefinedBehaviorSanitizer`. The option you need to
   include is `-fsanitize=undefined`.
 * Compile and run the executable. The executable should terminate with an error message about the
   undefined behavior. As you can see, a sanitizer automatically checks what you can check with an
-  assertion.
+  assertion, which is a benefit of using a sanitizer. A sanitizer inserts certain checks in order to
+  detect or prevent the category of errors it targets, e.g., undefined behavior, memory errors, etc.
+* You can stop recording here or continue with the next task.
 
-## Task 3: Debugger
+## Task 3: Fuzzers
+
+In the previous task, you passed a value that caused undefined behavior for `absolute_value()` so
+that `UndefinedBehaviorSanitizer` could detect it and report it. This means that when you have a
+problem in a function such as `absolute_value()`, you need to know which value to pass in order to
+trigger the problem and fix it. But how do you know what values to pass? Generally, if you write a
+function, you don't know if problems exist and so it is difficult for you to pass the right values
+that trigger problems.
+
+A *fuzzer* addresses that issue, not entirely but in a quite useful fashion. The most basic way to
+explain a fuzzer is to put it as an input generator. A fuzzer keeps running a function with a new
+input to see if the new input triggers a problem within the function. Obviously, a fuzzer's main
+strength lies in *how* to generate new inputs, and various fuzzers have their own strategies. The
+classic one is random input generation, [an idea that goes back
+decades](https://dl.acm.org/doi/10.1145/96267.96279). It turns out that fuzzing is very effective in
+finding problems (bugs and vulnerabilities) within a program. For example, [Google's OSS-Fuzz
+project](https://github.com/google/oss-fuzz), which runs various fuzzers on open-source software,
+says that "[a]s of August 2023, OSS-Fuzz has helped identify and fix over 10,000 vulnerabilities and
+36,000 bugs across 1,000 projects."
+
+In this task, you will use a well-known fuzzer called
+[libFuzzer](https://llvm.org/docs/LibFuzzer.html) and see how it finds a problem.
+
+* Again, if you're not already recording, start recording with `record`. Make sure that you start
+  recording in the same directory where this `README.md` is located.
+* Create a directory named `fuzzers` and do everything in that directory.
+* Create a file named `fuzzing.c` with the `absolute_value()` function above.
+* Remove all `assert()` calls from your `absolute_value()` function.
+* libFuzzer requires you to write a function called a *fuzz target* instead of the regular *main()*
+  function. This is so you can receive a newly-generated input and pass it to your own function. If
+  you read the [Fuzz Target](https://llvm.org/docs/LibFuzzer.html#fuzz-target) section, it will tell
+  you that you need to implement the following function:
+
+  ```c
+  extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+    ...
+  }
+  ```
+
+  This is the function that we need to implement instead of `main()`. If you look at the parameters,
+  there are two, `const uint8_t *Data` and `size_t Size`. The first parameter is a pointer to a
+  newly-generated input. The second parameter is the size of the newly-generated input. One caveat
+  is that, since we are using plain C, not C++, we do not need `extern "C"`.
+* Now, our `absolute_value()` expects to receive a 32-bit integer (`int32_t num`). Thus, we cannot
+  just pass a newly-generated input to `absolute_value()`. We need to format it and make sure that
+  we are passing the right-sized data. We can do it by the following code:
+
+  ```c
+  #include <stddef.h>
+  #include <stdint.h>
+
+  int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+    uint8_t input[sizeof(int32_t)] = {0};
+
+    // Making sure we're not passing anything larger than sizeof(int32_t) bytes
+    size_t cp_size = (size > sizeof(int32_t)) ? sizeof(int32_t) : size;
+    for (size_t i = 0; i < cp_size; ++i) {
+      input[i] = data[i];
+    }
+
+    absolute_value(*(int32_t *)input);
+
+    return 0;
+  }
+  ```
+
+* Clang can compile this with libFuzzer with `-fsanitize=fuzzer`. It will produce an executable,
+  which will repeatedly call `absolute_value()` with a new input. However, since we want to see if
+  problems exist, we also want to enable other sanitizers. For example, let's say we enable
+  `UndefinedBehaviorSanitizer`. If there is undefined behavior and libFuzzer generates a right input
+  to trigger the problem, we will be able to get a report from `UndefinedBehaviorSanitizer` that
+  there is a problem.
+* Let's try it by compiling `fuzzing.c` with `clang -fsanitize=undefined,fuzzer -o fuzzing
+  fuzzing.c`
+* If you run the executable, it will indefinitely run with new inputs. We can limit the duration of
+  execution with `-max_total_time=<sec>`. For example, `./fuzzing -max_total_time=10` limits the
+  duration of execution to 10 seconds.
+* Run it and see what happens. The output format is explained
+  [here](https://llvm.org/docs/LibFuzzer.html#output). In the middle of the output, you should be
+  able to see an error message that shows `runtime error` that explains the undefined behavior
+  detected. What this means is that we have discovered the same problem that we discovered in the
+  previous task, but this time without providing a manually-crafted input. libFuzzer has generated
+  an input that triggers the undefined behavior. At the end of the output, you should be able to see
+  a message that says "Done 13316455 runs in 11 second(s)" or something similar, which means that
+  `absolute_value()` has been called 13316455 times with that many new inputs.
+* If you create a directory and pass it as an argument, libFuzzer will save the inputs that have
+  triggered problems. For example, if you create `corpus/` and run `./fuzzing -max_total_time=10
+  corpus`, libFuzzer will save problematic inputs in `corpus/`. This directory can also contain
+  [seed inputs](https://llvm.org/docs/LibFuzzer.html#corpus), which are sample inputs that libFuzzer
+  can start with.
+* You can stop recording here or continue with the next task.
+
+## Task 4: Debuggers
 
 The last debugging tool we want to discuss is debuggers. A debugger gives you a powerful set of
 features suited for all debugging tasks, e.g., step-wise execution, variable inspection, reverse
-execution, code and memory manipulation, etc. In this task, you will work through some tutorials and
-do an exercise.
+execution, code and memory manipulation, etc. In particular, [GDB](https://www.sourceware.org/gdb/)
+is a popular command-line debugger available on Unix-like platforms. In this task, you will work
+through some tutorials for GDB and do an exercise.
 
 * Once again, if you are not recording, start recording with `record`. You should do this in the
   directory that this `README.md` file is in.
-*
+* Create a directory named `debugger` and do everything in that directory.
+* Open [A GDB Tutorial with Examples](https://www.cprogramming.com/gdb.html) and work through the
+  tutorial. However, when the tutorial asks you to run `gdb`, run `cgdb` instead.
+  [cgdb](https://cgdb.github.io/) is a front-end to GDB that provides more features. Also, when the
+  tutorial asks you to write a C++ factorial program, write the following C program instead.
 
-```c
-#include <stdio.h>
+  ```c
+  #include <stdio.h>
+  #include <stdlib.h>
 
-int main() {
-    int *ptr = NULL;
-    *ptr = 42;
-    return 0;
-}
-```
+  long factorial(int n);
+
+  int main(void) {
+   char input_buffer[10]; // Adjust the buffer size as needed
+   int n = 0;
+
+   if (fgets(input_buffer, sizeof(input_buffer), stdin) == NULL) {
+     printf("Error reading input.\n");
+     return 1;
+   }
+
+   n = atoi(input_buffer);
+
+   long val = factorial(n);
+   printf("%ld\n", val);
+   return 0;
+  }
+
+  long factorial(int n) {
+    long result = 1;
+    while (n--) {
+      result *= n;
+    }
+    return result;
+  }
+  ```
+
+  Since the code is different, the line numbers are different as well. When setting up breakpoints,
+  make sure you match the line numbers. Lastly, instead of using `g++`, use `clang`.
+* Next, read through two other articles to understand the basic features of GDB better. They are
+  [The GDB developer's GNU Debugger tutorial, Part 1: Getting started with the
+  debugger](https://developers.redhat.com/blog/2021/04/30/the-gdb-developers-gnu-debugger-tutorial-part-1-getting-started-with-the-debugger)
+  and [An introduction to debug events: Learn how to use
+  breakpoints](https://developers.redhat.com/articles/2022/11/08/introduction-debug-events-learn-how-use-breakpoints)
+* Once everything is done, stop recording and submit all files you created, including all `.nvim/`
+  and `.log/` directories.
+
+# Next steps
+
+You need to accept the invite for the next assignment (A7).
+
+* Go to this URL: [https://classroom.github.com/a/PGPiPLGw](https://classroom.github.com/a/PGPiPLGw)
+* Accept the invite for Assignment 7 (A7).
+* If you are not in `units/03-memory` directory, go to that directory.
+* Clone the assignment repo.
