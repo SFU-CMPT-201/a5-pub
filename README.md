@@ -70,7 +70,7 @@ what a logging library is.
 ## Task 1: Assertions
 
 An assertion is a function that checks if a condition is true and, if not, throws an error. You can
-use assertions for anything but the most basic use cases are checking conditions on input arguments
+use assertions for anything, but the most basic use cases are checking conditions on input arguments
 and return values. In C, `assert()` defined in `<assert.h>` provides the functionality. In this
 task, you will first learn the background and do an exercise.
 
@@ -89,14 +89,14 @@ int32_t unsafe_divide(int32_t dividend, int32_t divisor) {
 
 When writing this function, you're making an implicit assumption that `divisor` is not 0. This is
 known as *division by zero*, and in C, this is *undefined behavior*, meaning it can do whatever. In
-addition, you are also making an assumption that you are *not* dividing the minimum value possible
-for an integer by -1, i.e., it is not that `dividend` is `INT32_MIN` and `divisor` is -1 at the same
+addition, you are making an assumption that you are *not* dividing the minimum possible value for an
+integer by -1, i.e., it is *not* that `dividend` is `INT32_MIN` and `divisor` is -1 at the same
 time. The reason is because `INT32_MIN` is -2^31 (since it's a 32-bit integer) and if you were to
-divide it by -1, you would have to get +2^31, which is 1 more than the maximum value possible for a
+divide it by -1, you would have to get +2^31, which is 1 more than the maximum possible value for a
 32-bit integer (2^31 - 1). This is called *integer overflow* and it is also undefined behavior.
 
 In cases like this, you might want to check if these assumptions that you have actually hold. This
-way, you don't run into undefined behavior, which will do something unexpected. You can use
+way, you don't run into undefined behavior, which will do something unexpected. You can use an
 assertion to perform such a check.
 
 ```c
@@ -109,10 +109,11 @@ int32_t divide(int32_t dividend, int32_t divisor) {
 }
 ```
 
-If you call the above function with `INT32_MIN` as `dividend` and -1 as `divisor` or just -1 as
+If you call the above function with `INT32_MIN` as `dividend` and -1 as `divisor` or just 0 as
 `divisor`, the program will abort. This is useful for testing since you can catch the use of your
-function that violates your assumptions. Generally, assertions do not have to abort but `assert()`
-does abort and is used when termination is the right thing to do.
+function (from other parts of your program) that violates your assumptions. Generally, assertions do
+not have to abort but the function we use (`assert()`) does abort and should be used when
+termination is the right thing to do.
 
 More broadly, a condition that must be met before executing a piece of code is called a
 *precondition*. It is a general concept and can be applied to not just a function but any section of
@@ -200,14 +201,15 @@ as opposed to *dynamic* checks, i.e., their checks occur when you write your cod
 you run your code. You might recall that we discussed the differences between the terms "static" and
 "dynamic" when we discussed static and dynamic (shared) libraries. At that time, we said that
 "static" referred to something done at compile time and "dynamic" referred to something done at run
-time. However, the meaning of "static" is in fact broader---it refers to something done by analyzing
-code rather than by running it. For this reason, linters belong to the category of tools called
-*static analysis* tools.
+time. However, the meaning of "static" is in fact broader---it refers to something done by reading
+and analyzing code rather than by running it. For this reason, linters belong to the category of
+tools called *static analysis* tools, since they do not run the code but read and analyze it.
 
 In contrast, sanitizers are dynamic tools in the sense that they perform their checks at run time.
 As mentioned before, Clang provides many sanitizers such as `AddressSanitizer`, `ThreadSanitizer`,
 `MemorySanitizer`, `UndefinedBehaviorSanitizer`, etc. You can enable these sanitizers at compile
-time by using Clang's compiler options (`-fsanitize=`). In this task, you will use one of the
+time by using Clang's compiler options (`-fsanitize=`). When you run the resulting executable, the
+sanitizers that you have enabled will report errors if found. In this task, you will use one of the
 sanitizers and see which error you get.
 
 * Again, if you're not already recording, start recording with `record`. Make sure that you start
@@ -219,12 +221,13 @@ sanitizers and see which error you get.
   When calling `absolute_value()`, pass the value that causes undefined behavior.
 * Write a Makefile that produces an executable named `assertions`.
 * Run the executable and see what happens.
-* Modify your Makefile so you can enable `UndefinedBehaviorSanitizer`. The option you need to
-  include is `-fsanitize=undefined`.
+* Modify your Makefile so you can enable `UndefinedBehaviorSanitizer`. The option for `clang` you
+  need to include is `-fsanitize=undefined`.
 * Compile and run the executable. The executable should terminate with an error message about the
-  undefined behavior. As you can see, a sanitizer automatically checks what you can check with an
-  assertion, which is a benefit of using a sanitizer. A sanitizer inserts certain checks in order to
-  detect or prevent the category of errors it targets, e.g., undefined behavior, memory errors, etc.
+  undefined behavior. As you can see, a sanitizer automatically checks what you can manually check
+  with an assertion, which is a benefit of using a sanitizer. A sanitizer inserts certain checks for
+  you in order to detect or prevent the category of errors it targets, e.g., undefined behavior,
+  memory errors, etc.
 * You can stop recording here or continue with the next task.
 
 ## Task 3: Fuzzers
@@ -237,15 +240,15 @@ function, you don't know if problems exist and so it is difficult for you to pas
 that trigger problems.
 
 A *fuzzer* addresses that issue, not entirely but in a quite useful fashion. The most basic way to
-explain a fuzzer is to put it as an input generator. A fuzzer keeps running a function with a new
-input to see if the new input triggers a problem within the function. Obviously, a fuzzer's main
-strength lies in *how* to generate new inputs, and various fuzzers have their own strategies. The
-classic one is random input generation, [an idea that goes back
+explain a fuzzer is to put it as an input generator. A fuzzer keeps running a function that you
+provide with a new input to see if the new input triggers a problem within the function. Obviously,
+a fuzzer's main strength lies in *how* to generate new inputs, and various fuzzers have their own
+strategies. The classic one is random input generation, [an idea that goes back
 decades](https://dl.acm.org/doi/10.1145/96267.96279). It turns out that fuzzing is very effective in
 finding problems (bugs and vulnerabilities) within a program. For example, [Google's OSS-Fuzz
-project](https://github.com/google/oss-fuzz), which runs various fuzzers on open-source software,
-says that "[a]s of August 2023, OSS-Fuzz has helped identify and fix over 10,000 vulnerabilities and
-36,000 bugs across 1,000 projects."
+project](https://github.com/google/oss-fuzz), which continuously runs various fuzzers on open-source
+software, says that "[a]s of August 2023, OSS-Fuzz has helped identify and fix over 10,000
+vulnerabilities and 36,000 bugs across 1,000 projects."
 
 In this task, you will use a well-known fuzzer called
 [libFuzzer](https://llvm.org/docs/LibFuzzer.html) and see how it finds a problem.
@@ -253,12 +256,13 @@ In this task, you will use a well-known fuzzer called
 * Again, if you're not already recording, start recording with `record`. Make sure that you start
   recording in the same directory where this `README.md` is located.
 * Create a directory named `fuzzers` and do everything in that directory.
-* Create a file named `fuzzing.c` with the `absolute_value()` function above.
+* Create a file named `fuzzing.c` with the `absolute_value()` function above in it.
 * Remove all `assert()` calls from your `absolute_value()` function.
-* libFuzzer requires you to write a function called a *fuzz target* instead of the regular *main()*
-  function. This is so you can receive a newly-generated input and pass it to your own function. If
-  you read the [Fuzz Target](https://llvm.org/docs/LibFuzzer.html#fuzz-target) section, it will tell
-  you that you need to implement the following function:
+* libFuzzer requires you to write a function called a *fuzz target* instead of the regular `main()`
+  function. This is so you can receive a new input generated by libFuzzer and pass it to your own
+  function. If you read the [Fuzz Target](https://llvm.org/docs/LibFuzzer.html#fuzz-target) section
+  of the libFuzzer documentation page, it will tell you that you need to implement the following
+  function:
 
   ```c
   extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
@@ -267,19 +271,19 @@ In this task, you will use a well-known fuzzer called
   ```
 
   This is the function that we need to implement instead of `main()`. If you look at the parameters,
-  there are two, `const uint8_t *Data` and `size_t Size`. The first parameter is a pointer to a
-  newly-generated input. The second parameter is the size of the newly-generated input. One caveat
-  is that, since we are using plain C, not C++, we do not need `extern "C"`.
+  there are two, `const uint8_t *Data` and `size_t Size`. The first parameter is a pointer to a new
+  input generated by libFuzzer. The second parameter is the size of the newly-generated input. One
+  thing to note here is that, since we are using plain C, not C++, we do not need `extern "C"`.
 * Now, our `absolute_value()` expects to receive a 32-bit integer (`int32_t num`). Thus, we cannot
   just pass a newly-generated input to `absolute_value()`. We need to format it and make sure that
-  we are passing the right-sized data. We can do it by the following code:
+  we are passing the right-sized data. We can do it with the following code:
 
   ```c
   #include <stddef.h>
   #include <stdint.h>
 
   int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    uint8_t input[sizeof(int32_t)] = {0};
+    uint8_t input[sizeof(int32_t)] = {0}; // Making sure we initialize every byte to 0.
 
     // Making sure we're not passing anything larger than sizeof(int32_t) bytes
     size_t cp_size = (size > sizeof(int32_t)) ? sizeof(int32_t) : size;
@@ -293,12 +297,16 @@ In this task, you will use a well-known fuzzer called
   }
   ```
 
-* Clang can compile this with libFuzzer with `-fsanitize=fuzzer`. It will produce an executable,
-  which will repeatedly call `absolute_value()` with a new input. However, since we want to see if
-  problems exist, we also want to enable other sanitizers. For example, let's say we enable
-  `UndefinedBehaviorSanitizer`. If there is undefined behavior and libFuzzer generates a right input
-  to trigger the problem, we will be able to get a report from `UndefinedBehaviorSanitizer` that
-  there is a problem.
+* Clang can compile this with libFuzzer with `-fsanitize=fuzzer` as an additional option passed to
+  `clang`. It will produce an executable, which will repeatedly call `absolute_value()` with a new
+  input. However, since we want to see if problems exist, we also want to enable other sanitizers.
+  For example, let's say we enable `UndefinedBehaviorSanitizer`. If there is undefined behavior and
+  libFuzzer generates a right input to trigger the problem, we will be able to get a report from
+  `UndefinedBehaviorSanitizer` that there is a problem. This is an important point---a fuzzer's main
+  feature is generating new inputs. We still need a way to detect a problem, which we can do
+  manually by inserting assertions ourselves or automatically by using tools like sanitizers.
+  Fuzzers *can* detect simple problems like crashes, but generally you want to use it with other
+  detection mechanisms like sanitizers.
 * Let's try it by compiling `fuzzing.c` with `clang -fsanitize=undefined,fuzzer -o fuzzing
   fuzzing.c`
 * If you run the executable, it will indefinitely run with new inputs. We can limit the duration of
@@ -306,8 +314,8 @@ In this task, you will use a well-known fuzzer called
   duration of execution to 10 seconds.
 * Run it and see what happens. The output format is explained
   [here](https://llvm.org/docs/LibFuzzer.html#output). In the middle of the output, you should be
-  able to see an error message that shows `runtime error` that explains the undefined behavior
-  detected. What this means is that we have discovered the same problem that we discovered in the
+  able to see an error message that shows `runtime error` that explains the detected undefined
+  behavior. What this means is that we have discovered the same problem that we discovered in the
   previous task, but this time without providing a manually-crafted input. libFuzzer has generated
   an input that triggers the undefined behavior. At the end of the output, you should be able to see
   a message that says "Done 13316455 runs in 11 second(s)" or something similar, which means that
@@ -316,7 +324,8 @@ In this task, you will use a well-known fuzzer called
   triggered problems. For example, if you create `corpus/` and run `./fuzzing -max_total_time=10
   corpus`, libFuzzer will save problematic inputs in `corpus/`. This directory can also contain
   [seed inputs](https://llvm.org/docs/LibFuzzer.html#corpus), which are sample inputs that libFuzzer
-  can start with.
+  can start with. It is typically considered a good idea to provide seed inputs, especially in cases
+  where your function expects a particular data format, e.g., images.
 * You can stop recording here or continue with the next task.
 
 ## Task 4: Debuggers
