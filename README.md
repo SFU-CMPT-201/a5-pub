@@ -72,7 +72,7 @@ what a logging library is.
 An assertion is a function that checks if a condition is true and, if not, throws an error. You can
 use assertions for anything, but the most basic use cases are checking conditions on input arguments
 and return values. In C, `assert()` defined in `<assert.h>` provides the functionality. In this
-task, you will first learn the background and do an exercise.
+task, you will first learn the background and do an activity.
 
 ### Checking input argument conditions
 
@@ -177,7 +177,7 @@ Along with the concept of preconditions discussed above, there is a concept know
 This is also a general concept that goes beyond function returns, and the use of `assertion()` in
 the above example is just one example.
 
-### Assertion exercise
+### Assertion activity
 
 * If you're not already recording, start recording with `record`. Make sure that you start recording
   in the same directory where this `README.md` is located.
@@ -334,7 +334,7 @@ The last debugging tool we want to discuss is debuggers. A debugger gives you a 
 features suited for all debugging tasks, e.g., step-wise execution, variable inspection, reverse
 execution, code and memory manipulation, etc. In particular, [GDB](https://www.sourceware.org/gdb/)
 is a popular command-line debugger available on Unix-like platforms. In this task, you will work
-through some tutorials for GDB and do an exercise.
+through some tutorials for GDB.
 
 * Once again, if you are not recording, start recording with `record`. You should do this in the
   directory that this `README.md` file is in.
