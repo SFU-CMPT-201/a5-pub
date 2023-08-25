@@ -30,8 +30,10 @@ what a logging library is.
 
 * First, start recording with `record`. Make sure you are in the same directory that this
   `README.md` file is in.
-* Create a directory named `logging` under this assignment's directory, and do everything in that
-  directory.
+* Go to the repo for [log.c](https://github.com/rxi/log.c) and carefully read its `README.md` to
+  understand how to use the logging functions.
+* Create a directory named `logging` under this assignment's root directory, and do everything in
+  that directory.
 * Create a file named `logging.c` and write the following code.
 
   ```bash
@@ -56,7 +58,6 @@ what a logging library is.
 * Write a Makefile that compiles `logging.c` and generates an executable named `logging`.
 * Go to [log.c](https://github.com/rxi/log.c) and clone the repo outside of `units/`. For example,
   you can clone the repo in your home root directory (`$HOME`).
-* Carefully read `README.md` in the cloned repo to understand how to use the logging functions.
 * From the cloned repo, copy `log.c` and `log.h` to `logging/`.
 * Insert some logging functions to `logging.c` to trace the program execution. Make sure you modify
   your Makefile to compile correctly.
@@ -219,7 +220,7 @@ sanitizers and see which error you get.
 * Remove all `assert()` calls from your `absolute_value()` function.
 * Create a file named `main.c` with a `main()` function that calls your `absolute_value()` function.
   When calling `absolute_value()`, pass the value that causes undefined behavior.
-* Write a Makefile that produces an executable named `assertions`.
+* Write a Makefile that produces an executable named `sanitizers`.
 * Run the executable and see what happens.
 * Modify your Makefile so you can enable `UndefinedBehaviorSanitizer`. The option for `clang` you
   need to include is `-fsanitize=undefined`.
@@ -351,19 +352,19 @@ through some tutorials for GDB.
   long factorial(int n);
 
   int main(void) {
-   char input_buffer[10]; // Adjust the buffer size as needed
-   int n = 0;
+    char input_buffer[10]; // Adjust the buffer size as needed
+    int n = 0;
 
-   if (fgets(input_buffer, sizeof(input_buffer), stdin) == NULL) {
-     printf("Error reading input.\n");
-     return 1;
-   }
+    if (fgets(input_buffer, sizeof(input_buffer), stdin) == NULL) {
+      printf("Error reading input.\n");
+      return 1;
+    }
 
-   n = atoi(input_buffer);
+    n = atoi(input_buffer);
 
-   long val = factorial(n);
-   printf("%ld\n", val);
-   return 0;
+    long val = factorial(n);
+    printf("%ld\n", val);
+    return 0;
   }
 
   long factorial(int n) {
