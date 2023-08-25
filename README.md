@@ -40,18 +40,18 @@ what a logging library is.
   #include <stdio.h>
 
   int main() {
-    int size = 5;
-    int numbers[size];
-    int sum = 0;
+  int size = 5;
+  int numbers[size];
+  int sum = 0;
 
-    for (int i = 0; i <= size; ++i) {
-      numbers[i] = i;
-      sum += numbers[i];
-    }
+  for (int i = 0; i <= size; ++i) {
+    numbers[i] = i;
+    sum += numbers[i];
+  }
 
-    printf("The sum is: %d\n", sum);
+  printf("The sum is: %d\n", sum);
 
-    return 0;
+  return 0;
   }
   ```
 
@@ -384,7 +384,7 @@ through some tutorials for GDB.
   and [An introduction to debug events: Learn how to use
   breakpoints](https://developers.redhat.com/articles/2022/11/08/introduction-debug-events-learn-how-use-breakpoints)
 * Once everything is done, stop recording and submit all files you created, including all `.nvim/`
-  and `.log/` directories.
+  and `.record/` directories.
 
 # Next steps
 
