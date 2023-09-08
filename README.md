@@ -1,4 +1,4 @@
-# Assignment 6: Debugging tools
+# Assignment 6: Debugging Tools
 
 Debugging is fundamental in software development. You probably know this already from your
 experience in previous courses because you might have run into errors in your code and had to find
@@ -75,7 +75,7 @@ use assertions for anything, but the most basic use cases are checking condition
 and return values. In C, `assert()` defined in `<assert.h>` provides the functionality. In this
 task, you will first learn the background and do an activity.
 
-### Checking input argument conditions
+### Checking Input Argument Conditions
 
 When you write a function, you make certain assumptions about your input arguments. For example,
 let's say you're writing a function that performs integer division as follows.
@@ -130,7 +130,7 @@ Programmer Should Know about Undefined
 Behavior](http://blog.llvm.org/2011/05/what-every-c-programmer-should-know.html) by Chris Lattner,
 the main creator of Clang, is also a good read on this topic.
 
-### Checking return conditions
+### Checking Return Conditions
 
 Another common use case for `assert()` is right before returning from a function to check if the
 conditions for the return value are met. For example, let's say you are writing a function that
@@ -178,7 +178,7 @@ Along with the concept of preconditions discussed above, there is a concept know
 This is also a general concept that goes beyond function returns, and the use of `assertion()` in
 the above example is just one example.
 
-### Assertion activity
+### Assertion Activity
 
 * If you're not already recording, start recording with `record`. Make sure that you start recording
   in the same directory where this `README.md` is located.
@@ -193,7 +193,7 @@ the above example is just one example.
 * Write a Makefile that produces the executable named `assertions`.
 * You can stop recording here or continue with the next task.
 
-## Task 2: Static checkers and sanitizers
+## Task 2: Static Checkers and Sanitizers
 
 We mentioned linters and sanitizers before, which are useful tools for debugging. As you know
 already, we have installed linters for bash, C, CMake, etc. for Neovim, which give you useful
@@ -386,7 +386,7 @@ through some tutorials for GDB.
 * Once everything is done, stop recording and submit all files you created, including all `.nvim/`
   and `.record/` directories.
 
-# Next steps
+# Next Steps
 
 You need to accept the invite for the next assignment (A7).
 
