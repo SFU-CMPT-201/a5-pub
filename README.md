@@ -388,9 +388,10 @@ through some tutorials for GDB.
 
 # Next Steps
 
-You need to accept the invite for the next assignment (A7).
+You need to accept the invite for the next assignment (A7). Note that you now need to clone the repo
+under `units/03-memory`, **not** `units/02-tools`.
 
-* Go to this URL: [https://classroom.github.com/a/PGPiPLGw](https://classroom.github.com/a/PGPiPLGw)
+* Get the URL for A7. Go to the URL on your browser.
 * Accept the invite for Assignment 7 (A7).
 * If you are not in `units/03-memory` directory, go to that directory.
 * Clone the assignment repo.
