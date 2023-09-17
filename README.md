@@ -1,4 +1,4 @@
-# Assignment 6: Debugging Tools
+# Assignment 5: Debugging Tools
 
 Debugging is fundamental in software development. You probably know this already from your
 experience in previous courses because you might have run into errors in your code and had to find
@@ -388,10 +388,10 @@ through some tutorials for GDB.
 
 # Next Steps
 
-You need to accept the invite for the next assignment (A7). Note that you now need to clone the repo
+You need to accept the invite for the next assignment (A6). Note that you now need to clone the repo
 under `units/03-memory`, **not** `units/02-tools`.
 
-* Get the URL for A7. Go to the URL on your browser.
-* Accept the invite for Assignment 7 (A7).
+* Get the URL for A6. Go to the URL on your browser.
+* Accept the invite for Assignment 6 (A6).
 * If you are not in `units/03-memory` directory, go to that directory.
 * Clone the assignment repo.
