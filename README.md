@@ -9,6 +9,9 @@ also an active research area where numerous researchers try to improve the statu
 science of debugging is not within the scope of this course, we still want to discuss it, especially
 regarding the tools you can use for debugging.
 
+Note that this assignment mixes reading and activities. Please make sure you read thoroughly since
+you will learn important concepts.
+
 ## Task 0: Logging
 
 The most basic form of debugging is *tracing* where you track your program's code *flow*, i.e., the
@@ -61,9 +64,9 @@ what a logging library is.
 * From the cloned repo, copy `log.c` and `log.h` to `logging/`.
 * Insert some logging functions to `logging.c` to trace the program execution. Make sure you modify
   your Makefile to compile correctly.
-* Debug the problem and fix it. You need to submit the version that prints out logging messages
-  using `log.c` and fixes the problem. Do *not* change the `printf()` format since it will be used
-  for grading.
+* Debug the problem and fix it. You need to submit the version that does not have the problem and
+  also prints out logging messages using `log.c`. Do *not* change the `printf()` format since it
+  will be used for grading.
 * Entering `make` should produce a working executable named `logging`. This will be used for
   grading.
 * You can stop recording here or continue with the next task.
@@ -92,9 +95,10 @@ When writing this function, you're making an implicit assumption that `divisor` 
 known as *division by zero*, and in C, this is *undefined behavior*, meaning it can do whatever. In
 addition, you are making an assumption that you are *not* dividing the minimum possible value for an
 integer by -1, i.e., it is *not* that `dividend` is `INT32_MIN` and `divisor` is -1 at the same
-time. The reason is because `INT32_MIN` is -2^31 (since it's a 32-bit integer) and if you were to
-divide it by -1, you would have to get +2^31, which is 1 more than the maximum possible value for a
-32-bit integer (2^31 - 1). This is called *integer overflow* and it is also undefined behavior.
+time. The reason is because `INT32_MIN` is -2^31 (since it's a 32-bit signed integer) and if you
+were to divide it by -1, you would have to get +2^31, which is 1 more than the maximum possible
+value for a 32-bit integer (2^31 - 1). This is called *integer overflow* and it is also undefined
+behavior.
 
 In cases like this, you might want to check if these assumptions that you have actually hold. This
 way, you don't run into undefined behavior, which will do something unexpected. You can use an
@@ -175,8 +179,8 @@ int32_t absolute_value(int32_t num) {
 
 Along with the concept of preconditions discussed above, there is a concept known as
 *postconditions*. A postcondition is a condition that must be met after executing a piece of code.
-This is also a general concept that goes beyond function returns, and the use of `assertion()` in
-the above example is just one example.
+This is a general concept that goes beyond function returns, and the use of `assertion()` in the
+above example is just one example.
 
 ### Assertion Activity
 
@@ -189,7 +193,7 @@ the above example is just one example.
   undefined behavior.)
 * Create a file named `main.c` with a `main()` function that calls your `absolute_value()` function
   (that contains the precondition you added). When calling `absolute_value()`, pass the value that
-  causes undefined behavior, thereby causing your precondition to fail.
+  causes undefined behavior, so you can make your precondition fail.
 * Write a Makefile that produces the executable named `assertions`.
 * You can stop recording here or continue with the next task.
 
@@ -241,10 +245,10 @@ function, you don't know if problems exist and so it is difficult for you to pas
 that trigger problems.
 
 A *fuzzer* addresses that issue, not entirely but in a quite useful fashion. The most basic way to
-explain a fuzzer is to put it as an input generator. A fuzzer keeps running a function that you
-provide with a new input to see if the new input triggers a problem within the function. Obviously,
-a fuzzer's main strength lies in *how* to generate new inputs, and various fuzzers have their own
-strategies. The classic one is random input generation, [an idea that goes back
+understand a fuzzer is to think of it as an input generator. A fuzzer keeps running a function or a
+program with a newly-generated input to see if the new input triggers any problem. Obviously, a
+fuzzer's main strength lies in *how* to generate new inputs, and various fuzzers have their own
+strategies. A classic one is random input generation, [an idea that goes back
 decades](https://dl.acm.org/doi/10.1145/96267.96279). It turns out that fuzzing is very effective in
 finding problems (bugs and vulnerabilities) within a program. For example, [Google's OSS-Fuzz
 project](https://github.com/google/oss-fuzz), which continuously runs various fuzzers on open-source
@@ -274,10 +278,10 @@ In this task, you will use a well-known fuzzer called
   This is the function that we need to implement instead of `main()`. If you look at the parameters,
   there are two, `const uint8_t *Data` and `size_t Size`. The first parameter is a pointer to a new
   input generated by libFuzzer. The second parameter is the size of the newly-generated input. One
-  thing to note here is that, since we are using plain C, not C++, we do not need `extern "C"`.
+  thing to note here is that since we are using plain C, not C++, we do not need `extern "C"`.
 * Now, our `absolute_value()` expects to receive a 32-bit integer (`int32_t num`). Thus, we cannot
-  just pass a newly-generated input to `absolute_value()`. We need to format it and make sure that
-  we are passing the right-sized data. We can do it with the following code:
+  just pass a libFuzzer-generated input to `absolute_value()`. We need to format it and make sure
+  that we are passing correctly-sized data. We can do it with the following code:
 
   ```c
   #include <stddef.h>
@@ -287,8 +291,8 @@ In this task, you will use a well-known fuzzer called
     uint8_t input[sizeof(int32_t)] = {0}; // Making sure we initialize every byte to 0.
 
     // Making sure we're not passing anything larger than sizeof(int32_t) bytes
-    size_t cp_size = (size > sizeof(int32_t)) ? sizeof(int32_t) : size;
-    for (size_t i = 0; i < cp_size; ++i) {
+    size_t new_size = (size > sizeof(int32_t)) ? sizeof(int32_t) : size;
+    for (size_t i = 0; i < new_size; ++i) {
       input[i] = data[i];
     }
 
@@ -304,7 +308,7 @@ In this task, you will use a well-known fuzzer called
   For example, let's say we enable `UndefinedBehaviorSanitizer`. If there is undefined behavior and
   libFuzzer generates a right input to trigger the problem, we will be able to get a report from
   `UndefinedBehaviorSanitizer` that there is a problem. This is an important point---a fuzzer's main
-  feature is generating new inputs. We still need a way to detect a problem, which we can do
+  feature is generating new inputs. We still need a way to detect a problem, which we can do either
   manually by inserting assertions ourselves or automatically by using tools like sanitizers.
   Fuzzers *can* detect simple problems like crashes, but generally you want to use it with other
   detection mechanisms like sanitizers.
@@ -352,7 +356,7 @@ through some tutorials for GDB.
   long factorial(int n);
 
   int main(void) {
-    char input_buffer[10]; // Adjust the buffer size as needed
+    char input_buffer[10];
     int n = 0;
 
     if (fgets(input_buffer, sizeof(input_buffer), stdin) == NULL) {
