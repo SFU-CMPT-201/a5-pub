@@ -305,16 +305,17 @@ In this task, you will use a well-known fuzzer called
 
 * Clang can compile this with libFuzzer with `-fsanitize=fuzzer` as an additional option passed to
   `clang`. It will produce an executable, which will repeatedly call `absolute_value()` with a new
-  input. However, since we want to see if problems exist, we also want to enable other sanitizers.
-  For example, let's say we enable `UndefinedBehaviorSanitizer`. If there is undefined behavior and
-  libFuzzer generates a right input to trigger the problem, we will be able to get a report from
-  `UndefinedBehaviorSanitizer` that there is a problem. This is an important point---a fuzzer's main
-  feature is generating new inputs. We still need a way to detect a problem, which we can do either
-  manually by inserting assertions ourselves or automatically by using tools like sanitizers.
-  Fuzzers *can* detect simple problems like crashes, but generally you want to use it with other
-  detection mechanisms like sanitizers.
-* Let's try it by compiling `fuzzing.c` with `clang -fsanitize=undefined,fuzzer -o fuzzing
-  fuzzing.c`
+  input. However, libFuzzer itself doesn't detect any problems and it just generates new inputs and
+  calls `LLVMFuzzerTestOneInput()`. Thus, we also need a mechanism to detect problems. For example,
+  let's say we enable `UndefinedBehaviorSanitizer` as a undefined behavior detection mechanism. If
+  there is undefined behavior and libFuzzer generates a right input to trigger the problem,
+  `UndefinedBehaviorSanitizer` will be able to detect the problem. This is an important point---a
+  fuzzer's main feature is repeatedly generating new inputs and running code. We still need a way to
+  detect a problem, which we can do either manually by inserting assertions ourselves or
+  automatically by using tools like sanitizers. Though fuzzers *can* detect simple problems like
+  crashes, generally you want to use it with other detection mechanisms like sanitizers.
+* Let's use libFuzzer together with `UndefinedBehaviorSanitizer` by compiling `fuzzing.c` with
+  `clang -fsanitize=undefined,fuzzer -o fuzzing fuzzing.c`
 * If you run the executable, it will indefinitely run with new inputs. We can limit the duration of
   execution with `-max_total_time=<sec>`. For example, `./fuzzing -max_total_time=10` limits the
   duration of execution to 10 seconds.
