@@ -246,14 +246,15 @@ that trigger problems.
 
 A *fuzzer* addresses that issue, not entirely but in a quite useful fashion. The most basic way to
 understand a fuzzer is to think of it as an input generator. A fuzzer keeps running a function or a
-program with a newly-generated input to see if the new input triggers any problem. Obviously, a
-fuzzer's main strength lies in *how* to generate new inputs, and various fuzzers have their own
-strategies. A classic one is random input generation, [an idea that goes back
-decades](https://dl.acm.org/doi/10.1145/96267.96279). It turns out that fuzzing is very effective in
-finding problems (bugs and vulnerabilities) within a program. For example, [Google's OSS-Fuzz
+program with a newly-generated input to see if the new input triggers any problem. It turns out that
+this simple strategy of running a function/program over and over with new inputs is a very effective
+way to find bugs and vulnerabilities. For example, [Google's OSS-Fuzz
 project](https://github.com/google/oss-fuzz), which continuously runs various fuzzers on open-source
 software, says that "[a]s of August 2023, OSS-Fuzz has helped identify and fix over 10,000
-vulnerabilities and 36,000 bugs across 1,000 projects."
+vulnerabilities and 36,000 bugs across 1,000 projects." Obviously, a fuzzer's main strength lies in
+*how* to generate new inputs, and various fuzzers have their own strategies. A classic one is random
+input generation, [an idea that goes back decades](https://dl.acm.org/doi/10.1145/96267.96279). But
+modern fuzzers have many strategies they implement.
 
 In this task, you will use a well-known fuzzer called
 [libFuzzer](https://llvm.org/docs/LibFuzzer.html) and see how it finds a problem.
