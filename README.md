@@ -43,18 +43,18 @@ what a logging library is.
   #include <stdio.h>
 
   int main() {
-  int size = 5;
-  int numbers[size];
-  int sum = 0;
+    int size = 5;
+    int numbers[size];
+    int sum = 0;
 
-  for (int i = 0; i <= size; ++i) {
-    numbers[i] = i;
-    sum += numbers[i];
-  }
+    for (int i = 0; i <= size; ++i) {
+      numbers[i] = i;
+      sum += numbers[i];
+    }
 
-  printf("The sum is: %d\n", sum);
+    printf("The sum is: %d\n", sum);
 
-  return 0;
+    return 0;
   }
   ```
 
