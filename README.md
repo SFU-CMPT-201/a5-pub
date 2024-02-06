@@ -12,6 +12,12 @@ regarding the tools you can use for debugging.
 Note that this assignment mixes reading and activities. Please make sure you read thoroughly since
 you will learn important concepts.
 
+## Important Note
+
+You ***should not*** copy and paste the code or command examples here. You have to type them
+yourself and understand the meanings. If you copy and paste, you ***will not*** get any credit
+for this assignment.
+
 ## Task 0: Logging
 
 The most basic form of debugging is *tracing* where you track your program's code *flow*, i.e., the
