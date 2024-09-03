@@ -12,12 +12,6 @@ regarding the tools you can use for debugging.
 Note that this assignment mixes reading and activities. Please make sure you read thoroughly since
 you will learn important concepts.
 
-## Important Note
-
-You ***should not*** copy and paste the code or command examples. You have to type them yourself
-and understand the meanings. If you copy and paste, you ***will not*** get any credit for this
-assignment.
-
 ## Task 0: Logging
 
 The most basic form of debugging is *tracing* where you track your program's code *flow*, i.e., the
@@ -100,7 +94,7 @@ int32_t unsafe_divide(int32_t dividend, int32_t divisor) {
 When writing this function, you're making an implicit assumption that `divisor` is not 0. This is
 known as *division by zero*, and in C, this is *undefined behavior*, meaning it can do whatever. In
 addition, you are making an assumption that you are *not* dividing the minimum possible value for an
-integer by -1, i.e., it is *not* that `dividend` is `INT32_MIN` and `divisor` is -1 at the same
+integer by -1, i.e., it is *not* that `dividend` is `INT32_MIN` and that `divisor` is -1 at the same
 time. The reason is because `INT32_MIN` is -2^31 (since it's a 32-bit signed integer) and if you
 were to divide it by -1, you would have to get +2^31, which is 1 more than the maximum possible
 value for a 32-bit integer (2^31 - 1). This is called *integer overflow* and it is also undefined
@@ -331,8 +325,8 @@ In this task, you will use a well-known fuzzer called
   behavior. What this means is that we have discovered the same problem that we discovered in the
   previous task, but this time without providing a manually-crafted input. libFuzzer has generated
   an input that triggers the undefined behavior. At the end of the output, you should be able to see
-  a message that says "Done 13316455 runs in 11 second(s)" or something similar, which means that
-  `absolute_value()` has been called 13316455 times with that many new inputs.
+  a message that says something similar to "Done 13316455 runs in 11 second(s)", which means that
+  `absolute_value()` has been called X times (e.g., 13316455 times) with that many new inputs.
 * If you create a directory and pass it as an argument, libFuzzer will save the inputs that have
   triggered problems. For example, if you create `corpus/` and run `./fuzzing -max_total_time=10
   corpus`, libFuzzer will save problematic inputs in `corpus/`. This directory can also contain
@@ -395,8 +389,25 @@ through some tutorials for GDB.
   debugger](https://developers.redhat.com/blog/2021/04/30/the-gdb-developers-gnu-debugger-tutorial-part-1-getting-started-with-the-debugger)
   and [An introduction to debug events: Learn how to use
   breakpoints](https://developers.redhat.com/articles/2022/11/08/introduction-debug-events-learn-how-use-breakpoints)
-* Once everything is done, stop recording and submit all files you created, including all `.nvim/`
-  and `.record/` directories.
+* Once everything is done, stop recording.
+
+## Submission
+
+Make sure you use git to push all the files/directories you created, including `.nvim/` and
+`.record/`, for grading.
+
+As with previous assignments, make sure you run `a5-checker` to check if your work is ready for
+grading. `a5-checker` performs the following.
+* It checks if you have correct recording files. You will receive a 0 if this fails.
+* It checks if you have used `nvim` correctly. You will receive a 0 if this fails.
+* It flags if you have copied and pasted anything. You will receive a 0 if this fails.
+* It performs some basic checks for the tasks above.
+* Note that if a check fails, it does not always tell you why. You need to debug it by yourself and
+  find out.
+* The checker is not a grader but if it says that everything is good and if you are done with the
+  above tasks, you will get the full credit.
+* It is entirely *your responsibility* to run `a4-checker` before submitting your work. If you don't
+  do it, you may get an unexpected grade.
 
 # Next Steps
 
